@@ -1,69 +1,96 @@
-| Supported Targets | ESP32 | ESP32-C2 | ESP32-C3 | ESP32-C5 | ESP32-C6 | ESP32-C61 | ESP32-H2 | ESP32-H21 | ESP32-P4 | ESP32-S2 | ESP32-S3 |
-| ----------------- | ----- | -------- | -------- | -------- | -------- | --------- | -------- | --------- | -------- | -------- | -------- |
+# Light Pong Server
 
-# Blink Example
+ESP32-C3 server implementation for the Light Pong game using DMX512-controlled LED moving head with ESP-NOW wireless communication.
 
-(See the README.md file in the upper level 'examples' directory for more information about examples.)
+## Overview
 
-This example demonstrates how to blink a LED by using the GPIO driver or using the [led_strip](https://components.espressif.com/component/espressif/led_strip) library if the LED is addressable e.g. [WS2812](https://cdn-shop.adafruit.com/datasheets/WS2812B.pdf). The `led_strip` library is installed via [component manager](main/idf_component.yml).
+The server manages game logic, controls the MH-X25 LED moving head via DMX512, and communicates with wireless ESP-NOW paddle controllers. It implements dynamic peer discovery, fireball effects, and win animations.
 
-## How to Use Example
+## Hardware Requirements
 
-Before project configuration and build, be sure to set the correct chip target using `idf.py set-target <chip_name>`.
+- **ESP32-C3 Development Board**
+- **MH-X25 LED Moving Head** (12-channel DMX512)
+- **RS485 Transceiver Module** (for DMX communication)
 
-### Hardware Required
+### Pin Configuration
 
-* A development board with normal LED or addressable LED on-board (e.g., ESP32-S3-DevKitC, ESP32-C6-DevKitC etc.)
-* A USB cable for Power supply and programming
+| Function   | GPIO    | Notes                   |
+| ---------- | ------- | ----------------------- |
+| DMX TX     | GPIO 21 | UART transmit           |
+| DMX RX     | GPIO 20 | UART receive            |
+| DMX Enable | GPIO 9  | RS485 direction control |
 
-See [Development Boards](https://www.espressif.com/en/products/devkits) for more information about it.
+**Note:** Do not use GPIO18/19 (USB D-/D+ pins).
 
-### Configure the Project
+## Software Architecture
 
-Open the project configuration menu (`idf.py menuconfig`).
+The project follows a component-based architecture:
 
-In the `Example Configuration` menu:
+```
+components/
+├── dmx_driver/          # Low-level DMX512 UART driver
+├── mh_x25_driver/       # MH-X25 moving head abstraction
+├── light_effects/       # Visual effects (fireball, celebrations)
+└── espnow_comm/         # ESP-NOW communication handler
 
-* Select the LED type in the `Blink LED type` option.
-  * Use `GPIO` for regular LED
-  * Use `LED strip` for addressable LED
-* If the LED type is `LED strip`, select the backend peripheral
-  * `RMT` is only available for ESP targets with RMT peripheral supported
-  * `SPI` is available for all ESP targets
-* Set the GPIO number used for the signal in the `Blink GPIO number` option.
-* Set the blinking period in the `Blink period in ms` option.
-
-### Build and Flash
-
-Run `idf.py -p PORT flash monitor` to build, flash and monitor the project.
-
-(To exit the serial monitor, type ``Ctrl-]``.)
-
-See the [Getting Started Guide](https://docs.espressif.com/projects/esp-idf/en/latest/get-started/index.html) for full steps to configure and use ESP-IDF to build projects.
-
-## Example Output
-
-As you run the example, you will see the LED blinking, according to the previously defined period. For the addressable LED, you can also change the LED color by setting the `led_strip_set_pixel(led_strip, 0, 16, 16, 16);` (LED Strip, Pixel Number, Red, Green, Blue) with values from 0 to 255 in the [source file](main/blink_example_main.c).
-
-```text
-I (315) example: Example configured to blink addressable LED!
-I (325) example: Turning the LED OFF!
-I (1325) example: Turning the LED ON!
-I (2325) example: Turning the LED OFF!
-I (3325) example: Turning the LED ON!
-I (4325) example: Turning the LED OFF!
-I (5325) example: Turning the LED ON!
-I (6325) example: Turning the LED OFF!
-I (7325) example: Turning the LED ON!
-I (8325) example: Turning the LED OFF!
+main/
+├── game/
+│   ├── game_controller.c  # Core game logic
+│   └── game_types.h       # Game data structures
+└── config/
+    ├── hardware_config.h  # Pin definitions
+    └── game_config.h      # Game parameters
 ```
 
-Note: The color order could be different according to the LED model.
+## Build and Flash
 
-The pixel number indicates the pixel position in the LED strip. For a single LED, use 0.
+### Prerequisites
 
-## Troubleshooting
+- ESP-IDF v5.5.1 or later
+- ESP-IDF VS Code Extension (recommended)
 
-* If the LED isn't blinking, check the GPIO or the LED type selection in the `Example Configuration` menu.
+### Build Commands
 
-For any technical queries, please open an [issue](https://github.com/espressif/esp-idf/issues) on GitHub. We will get back to you soon.
+```bash
+# Set target
+idf.py set-target esp32c3
+
+# Build project
+idf.py build
+
+# Flash and monitor
+idf.py -p PORT flash monitor
+```
+
+## Game Features
+
+- **Dynamic Peer Discovery**: Automatically detects and pairs with paddle controllers
+- **Fireball Mode**: Special button press creates enhanced effects
+- **Win Animations**: Color-coded celebrations for scoring players
+- **Timeout Detection**: Automatic ball reset after 3 seconds of inactivity
+- **Score Broadcasting**: Real-time score updates to all connected clients
+
+## Configuration
+
+Key parameters in `main/config/game_config.h`:
+
+- `GAME_TIMEOUT_MS`: Ball timeout duration (3000ms)
+- `WIN_SCORE`: Points to win (3)
+- `BUTTON_FIREBALL`: Button state for fireball (0)
+- `BUTTON_NORMAL`: Button state for normal hit (1)
+
+## Communication Protocol
+
+The server uses ESP-NOW for low-latency wireless communication:
+
+- **Broadcast MAC**: `FF:FF:FF:FF:FF:FF`
+- **Score Updates**: Sent on every paddle hit
+- **Paddle Events**: Received from client controllers
+
+## License
+
+This project was developed as part of the FHV Master's program in Embedded Systems (2026).
+
+## Author
+
+Matthias Hefel
