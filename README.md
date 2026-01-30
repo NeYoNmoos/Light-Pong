@@ -82,14 +82,26 @@ ComponentQuantityPurposeESP32-C332x Client (rackets), 1x ServerMH-X25 LED Spotli
 
 light-pong/  
 ├── Hackathon_Light_Pong_Client/ # ESP32 client code (rackets)  
-│
 └── Hackaton_Light_pong_Server/ # ESP32 server code (controller)  
-│  
 └── README.md
 
 ## Setup & Installation
 
-### Media Coverage
+### Requirements
+
+- 3x ESP32c3 Development Board
+- 1x MH-X25 Moving Head
+- Table with paper plate
+
+### Setup
+
+Build and flash client project on 2x Esp32c3 and attach them to pingpong rackets with a powerbank.
+
+Build and flash server code on remaining Esp32c3 and connect it via RS485 module to the MH-X25 Moving head.
+
+Place the MH-X25 moving head centered under the table and begin playing. The clients will register themselves to the server. (No manual configuration needed)
+
+## Media Coverage
 
 Light-Pong was featured in the [VOL.AT Hackathon coverage:](https://www.vol.at/hackathon-100-studierende-48-stunden-eine-menge-kreativitaet/9806525)
 Hackathon: 100 Studierende, 48 Stunden, eine Menge Kreativität
