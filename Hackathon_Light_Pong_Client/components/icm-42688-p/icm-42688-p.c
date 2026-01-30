@@ -1,3 +1,9 @@
+/**
+ * Project: RISC-V Disassembler/Simulator
+ * Author: Elias Sohm
+ * Date: 30.01.2026
+ * Copyright (c) 2026 Elias Sohm
+ */
 #include "icm-42688-p.h"
 
 #define PIN_NUM_CS GPIO_NUM_1

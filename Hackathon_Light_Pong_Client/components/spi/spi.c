@@ -1,3 +1,9 @@
+/**
+ * Project: RISC-V Disassembler/Simulator
+ * Author: Elias Sohm
+ * Date: 30.01.2026
+ * Copyright (c) 2026 Elias Sohm
+ */
 #include "spi.h"
 
 #define PIN_NUM_MISO GPIO_NUM_7

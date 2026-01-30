@@ -1,3 +1,9 @@
+/**
+ * Project: RISC-V Disassembler/Simulator
+ * Author: Elias Sohm
+ * Date: 30.01.2026
+ * Copyright (c) 2026 Elias Sohm
+ */
 #include "espnow-client.h"
 
 static const char* TAG = "ESPNOW_CLIENT";

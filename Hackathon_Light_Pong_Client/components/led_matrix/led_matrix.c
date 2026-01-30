@@ -1,3 +1,9 @@
+/**
+ * Project: RISC-V Disassembler/Simulator
+ * Author: Elias Sohm
+ * Date: 30.01.2026
+ * Copyright (c) 2026 Elias Sohm
+ */
 #include "led_matrix.h"
 
 #define LED_STRIP_RMT_RES_HZ (10 * 1000 * 1000)
